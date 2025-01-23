@@ -86,7 +86,6 @@
                                 <th class="text-center">Brand</th>
                                 <th class="text-center">Options</th>
                                 <th class="text-center">Return Status</th>
-                                <th class="text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -109,13 +108,6 @@
                                     <td class="text-center">{{ $item->product->brand->name }}</td>
                                     <td class="text-center">{{ $item->options }}</td>
                                     <td class="text-center">{{ $item->rstatus == 0 ? 'No' : 'Yes' }}</td>
-                                    <td class="text-center">
-                                        <div class="list-icon-function view-icon">
-                                            <div class="item eye">
-                                                <i class="icon-eye"></i>
-                                            </div>
-                                        </div>
-                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>

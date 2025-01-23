@@ -124,11 +124,8 @@
         <div class="row">
           <div
             class="col-md-6 col-lg-4 col-xl-20per d-flex align-items-center flex-column justify-content-center py-4 align-items-md-start">
-            <h2> Sales</h2>
-            <h2 class="fw-bold">Up to 40% Off</h2>
-
-
-
+            <h2>Sales</h2>
+            <h2 class="fw-bold">Up to 20% Off</h2>
             <a href="{{ route('shop.index') }}" class="btn-link default-underline text-uppercase fw-medium mt-3">View All</a>
           </div>
           <div class="col-md-6 col-lg-8 col-xl-80per">
@@ -168,29 +165,29 @@
                 }'>
                 <div class="swiper-wrapper">
                     @foreach($sproducts as $sproduct)
-                  <div class="swiper-slide product-card product-card_style3">
-                    <div class="pc__img-wrapper">
-                      <a href="{{ route('shop.product.details', ['product_slug' => $sproduct->slug]) }}">
-                        <img loading="lazy" src="{{ asset('uploads/products') }}/{{ $sproduct->image }}" width="258" height="313"
-                          alt="{{ $sproduct->name }}" class="pc__img">
-                      </a>
-                    </div>
-
-                    <div class="pc__info position-relative">
-                      <h6 class="pc__title"><a href="{{ route('shop.product.details', ['product_slug' => $sproduct->slug]) }}">{{ $sproduct->name }}</a></h6>
-                      <div class="product-card__price d-flex">
-                        <span class="money price text-secondary">
                         @if($sproduct->sale_price < $sproduct->regular_price)
-                            <s>&euro;{{ $sproduct->regular_price }}</s>
-                                &euro;{{ $sproduct->sale_price }}
-                        @else
-                            &euro;{{ $sproduct->regular_price }}
+                            <div class="swiper-slide product-card product-card_style3">
+                                <div class="pc__img-wrapper">
+                                    <a href="{{ route('shop.product.details', ['product_slug' => $sproduct->slug]) }}">
+                                        <img loading="lazy" src="{{ asset('uploads/products') }}/{{ $sproduct->image }}" width="258" height="313"
+                                            alt="{{ $sproduct->name }}" class="pc__img">
+                                    </a>
+                                </div>
+
+                                <div class="pc__info position-relative">
+                                    <h6 class="pc__title">
+                                        <a href="{{ route('shop.product.details', ['product_slug' => $sproduct->slug]) }}">{{ $sproduct->name }}</a>
+                                    </h6>
+                                    <div class="product-card__price d-flex">
+                                        <span class="money price text-secondary">
+                                            <s>&euro;{{ $sproduct->regular_price }}</s>
+                                            &euro;{{ $sproduct->sale_price }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
                         @endif
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  @endforeach
+                    @endforeach
                 </div><!-- /.swiper-wrapper -->
               </div><!-- /.swiper-container js-swiper-slider -->
             </div><!-- /.position-relative -->

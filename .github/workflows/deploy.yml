@@ -1,0 +1,30 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: 185.97.144.103
+          username: horscom
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            cd /home/horscom/htdocs/ecommerce.horsenco.com
+            git stash
+            git pull origin main
+            composer install --no-interaction --prefer-dist --optimize-autoloader
+            php artisan migrate --force
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            chown -R horscom:horscom .
+            find . -type f -exec chmod 644 {} \;
+            find . -type d -exec chmod 755 {} \; 

@@ -1,5 +1,13 @@
 @extends('layouts.admin')
 @section('content')
+<style>
+    .tf-section-2 {
+        margin-bottom: 30px;
+    }
+    #line-chart-8 {
+    min-height: 325px;
+}
+</style>
 <div class="main-content-inner">
     <div class="main-content-wrap">
          <div class="tf-section-2 mb-30">
@@ -264,37 +272,35 @@
 @push('scripts')
 <script>
     (function ($) {
-
         var tfLineChart = (function () {
-
             var chartBar = function () {
-
                 var options = {
                     series: [{
                         name: 'Total',
-                        data: [{{$AmountM}}]
+                        data: @json($AmountM)
                     }, {
                         name: 'Pending',
-                        data: [{{$OrderedAmountM}}]
+                        data: @json($OrderedAmountM)
                     },
                     {
                         name: 'Delivered',
-                        data: [{{$DeliveredAmountM}}]
+                        data: @json($DeliveredAmountM)
                     }, {
                         name: 'Canceled',
-                        data: [{{$CanceledAmountM}}]
+                        data: @json($CanceledAmountM)
                     }],
                     chart: {
                         type: 'bar',
                         height: 325,
+                        stacked: false,
                         toolbar: {
-                            show: false,
+                            show: true
                         },
                     },
                     plotOptions: {
                         bar: {
                             horizontal: false,
-                            columnWidth: '10px',
+                            columnWidth: '55%',
                             endingShape: 'rounded'
                         },
                     },
@@ -302,22 +308,28 @@
                         enabled: false
                     },
                     legend: {
-                        show: false,
+                        show: true,
+                        position: 'top'
                     },
                     colors: ['#2377FC', '#FFA500', '#078407', '#FF0000'],
                     stroke: {
-                        show: false,
+                        show: true,
+                        width: 2,
+                        colors: ['transparent']
                     },
                     xaxis: {
+                        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
                         labels: {
                             style: {
-                                colors: '#212529',
-                            },
-                        },
-                        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                                colors: '#212529'
+                            }
+                        }
                     },
                     yaxis: {
-                        show: false,
+                        show: true,
+                        title: {
+                            text: '€'
+                        }
                     },
                     fill: {
                         opacity: 1
@@ -325,25 +337,24 @@
                     tooltip: {
                         y: {
                             formatter: function (val) {
-                                return "$ " + val + ""
+                                return "€" + val
                             }
                         }
                     }
                 };
 
-                chart = new ApexCharts(
+                var chart = new ApexCharts(
                     document.querySelector("#line-chart-8"),
                     options
                 );
+                
                 if ($("#line-chart-8").length > 0) {
                     chart.render();
                 }
             };
 
-            /* Function ============ */
             return {
                 init: function () { },
-
                 load: function () {
                     chartBar();
                 },
@@ -351,13 +362,9 @@
             };
         })();
 
-        jQuery(document).ready(function () { });
-
         jQuery(window).on("load", function () {
             tfLineChart.load();
         });
-
-        jQuery(window).on("resize", function () { });
     })(jQuery);
 </script>
 

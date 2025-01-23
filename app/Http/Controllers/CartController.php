@@ -16,6 +16,17 @@ use Surfsidemedia\Shoppingcart\Facades\Cart;
 class CartController extends Controller
 {
 
+    protected $messages = [
+        'card_number.required' => 'Please enter your card number',
+        'card_number.numeric' => 'Card number must contain only numbers',
+        'card_number.digits' => 'Card number must be 16 digits',
+        'expiry.required' => 'Please enter card expiry date',
+        'expiry.size' => 'Expiry date must be in MM/YY format',
+        'cvv.required' => 'Please enter CVV',
+        'cvv.numeric' => 'CVV must contain only numbers',
+        'cvv.digits' => 'CVV must be 3 digits'
+    ];
+
     public function index()
     {
         $items = Cart::instance('cart')->content();
@@ -189,23 +200,31 @@ class CartController extends Controller
 
         if($request->mode == "card")
         {
-            //
+            $transaction = new Transaction();
+            $transaction->user_id = $user_id;
+            $transaction->order_id = $order->id;
+            $transaction->mode = 'card';
+            $transaction->status = 'approved';  // Auto-approve for demo
+            $transaction->save();
         }
         elseif($request->mode == "paypal")
         {
-            //
+            $transaction = new Transaction();
+            $transaction->user_id = $user_id;
+            $transaction->order_id = $order->id;
+            $transaction->mode = 'paypal';
+            $transaction->status = 'approved';  // Auto-approve for demo
+            $transaction->save();
         }
-
         elseif($request->mode == "cod")
         {
             $transaction = new Transaction();
             $transaction->user_id = $user_id;
             $transaction->order_id = $order->id;
-            $transaction->mode = $request->mode;
+            $transaction->mode = 'cod';
             $transaction->status = 'pending';
             $transaction->save();
         }
-
 
         Cart::instance('cart')->destroy();
         Session::forget('checkout');

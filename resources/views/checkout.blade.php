@@ -189,18 +189,48 @@
               </div>
 
               <div class="checkout__payment-methods">
-
                 <div class="form-check">
-                  
+                    <input class="form-check-input form-check-input_fill" type="radio" name="mode" id="mode1" value="card" />
+                    <label class="form-check-label" for="mode1">
+                        Credit Card
+                        <img src="{{ asset('assets/images/visa.png') }}" alt="Visa" style="height: 25px; margin-left: 10px;">
+                        <img src="{{ asset('assets/images/mastercard.png') }}" alt="Mastercard" style="height: 25px; margin-left: 5px;">
+                    </label>
+                    <div class="card-details mt-3" id="cardDetails" style="display: none;">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" value="4242 4242 4242 4242" readonly>
+                            <label>Card Number (Demo)</label>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" value="12/25" readonly>
+                                    <label>Expiry Date (Demo)</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" value="123" readonly>
+                                    <label>CVV (Demo)</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                
                 <div class="form-check">
+                    <input class="form-check-input form-check-input_fill" type="radio" name="mode" id="mode2" value="paypal" />
+                    <label class="form-check-label" for="mode2">
+                        PayPal
+                        <img src="{{ asset('assets/images/paypal.png') }}" alt="PayPal" style="height: 25px; margin-left: 10px;">
+                    </label>
+                </div>
 
-                  </div>
                 <div class="form-check">
-                  <input class="form-check-input form-check-input_fill" type="radio" name="mode" id="mode3" value="cod" />
-                  <label class="form-check-label" for="mode3">
-                    Cash on delivery
-                  </label>
+                    <input class="form-check-input form-check-input_fill" type="radio" name="mode" id="mode3" value="cod" checked/>
+                    <label class="form-check-label" for="mode3">
+                        Cash on delivery
+                    </label>
                 </div>
 
                 <div class="policy-text">
@@ -217,5 +247,22 @@
     </section>
   </main>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const cardRadio = document.getElementById('mode1');
+        const cardDetails = document.getElementById('cardDetails');
+
+        function toggleCardDetails() {
+            cardDetails.style.display = cardRadio.checked ? 'block' : 'none';
+        }
+
+        document.querySelectorAll('input[name="mode"]').forEach(radio => {
+            radio.addEventListener('change', toggleCardDetails);
+        });
+    });
+</script>
+@endpush
 
 

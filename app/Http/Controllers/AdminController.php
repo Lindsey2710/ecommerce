@@ -34,34 +34,37 @@ class AdminController extends Controller
                                     sum(if(status = 'canceled', 1,0)) as TotalCanceled
                                     FROM Orders");
 
-        $monthlyDatas = DB::select("SELECT M.id as MonthNo, M.name as MonthName,
-                                    ifnull(D.TotalAmount,0) as TotalAmount,
-                                    ifnull(D.TotalOrderedAmount,0) as TotalOrderedAmount,
-                                    ifnull(D.TotalDeliveredAmount,0) as TotalDeliveredAmount,
-                                    ifnull(D.TotalCanceledAmount,0) as TotalCanceledAmount from month_names M
-                                    left join
-                                    (select date_format(created_at, '%b') as MonthName, month(created_at) as MonthNo,
-                                    sum(total) as TotalAmount,
-                                    sum(if(status = 'ordered', total, 0)) as TotalOrderedAmount,
-                                    sum(if(status = 'delivered', total, 0)) as TotalDeliveredAmount,
-                                    sum(if(status = 'canceled', total, 0)) as TotalCanceledAmount
-                                    from orders where year(created_at) = year(now())
-                                    group by year(created_at), month(created_at), date_format(created_at, '%b')
-                                    order by month(created_at)) D on D.MonthNo = M.id");
+        $monthlyData = Order::selectRaw('
+            MONTH(created_at) as month,
+            SUM(total) as total_amount,
+            SUM(CASE WHEN status = "ordered" THEN total ELSE 0 END) as ordered_amount,
+            SUM(CASE WHEN status = "delivered" THEN total ELSE 0 END) as delivered_amount,
+            SUM(CASE WHEN status = "canceled" THEN total ELSE 0 END) as canceled_amount
+        ')
+        ->whereYear('created_at', date('Y'))
+        ->groupBy('month')
+        ->orderBy('month')
+        ->get();
 
-        $AmountM = implode(',', collect($monthlyDatas)->pluck('TotalAmount')->toArray());
-        $OrderedAmountM = implode(',', collect($monthlyDatas)->pluck('TotalOrderedAmount')->toArray());
-        $DeliveredAmountM = implode(',', collect($monthlyDatas)->pluck('TotalDeliveredAmount')->toArray());
-        $CanceledAmountM = implode(',', collect($monthlyDatas)->pluck('TotalCanceledAmount')->toArray());
+        $AmountM = array_fill(0, 12, 0);
+        $OrderedAmountM = array_fill(0, 12, 0);
+        $DeliveredAmountM = array_fill(0, 12, 0);
+        $CanceledAmountM = array_fill(0, 12, 0);
 
-        $TotalAmount = collect($monthlyDatas)->sum('TotalAmount');
-        $TotalOrderedAmount = collect($monthlyDatas)->sum('TotalOrderedAmount');
-        $TotalDeliveredAmount = collect($monthlyDatas)->sum('TotalDeliveredAmount');
-        $TotalCanceledAmount = collect($monthlyDatas)->sum('TotalCanceledAmount');
+        foreach ($monthlyData as $data) {
+            $index = $data->month - 1;
+            $AmountM[$index] = (float)$data->total_amount;
+            $OrderedAmountM[$index] = (float)$data->ordered_amount;
+            $DeliveredAmountM[$index] = (float)$data->delivered_amount;
+            $CanceledAmountM[$index] = (float)$data->canceled_amount;
+        }
 
-        return view('admin.index', compact('orders', 'dashboardDatas',
-         'monthlyDatas', 'AmountM', 'OrderedAmountM', 'DeliveredAmountM', 'CanceledAmountM', 'TotalAmount',
-         'TotalOrderedAmount', 'TotalDeliveredAmount', 'TotalCanceledAmount'));
+        $TotalAmount = collect($dashboardDatas)->sum('TotalAmount');
+        $TotalOrderedAmount = collect($dashboardDatas)->sum('TotalOrderedAmount');
+        $TotalDeliveredAmount = collect($dashboardDatas)->sum('TotalDeliveredAmount');
+        $TotalCanceledAmount = collect($dashboardDatas)->sum('TotalCanceledAmount');
+
+        return view('admin.index', compact('orders', 'dashboardDatas', 'AmountM', 'OrderedAmountM', 'DeliveredAmountM', 'CanceledAmountM', 'TotalAmount', 'TotalOrderedAmount', 'TotalDeliveredAmount', 'TotalCanceledAmount'));
     }
 
     public function brands()
@@ -238,7 +241,23 @@ class AdminController extends Controller
 
     public function products()
     {
-        $products = Product::orderBy('created_at', 'desc')->paginate(10);
+        $search = request('search');
+        
+        $products = Product::query()
+            ->when($search, function($query) use ($search) {
+                $query->where(function($q) use ($search) {
+                    $q->where('name', 'like', '%'.$search.'%')
+                      ->orWhereHas('brand', function($brandQuery) use ($search) {
+                          $brandQuery->where('name', 'like', '%'.$search.'%');
+                      })
+                      ->orWhereHas('category', function($categoryQuery) use ($search) {
+                          $categoryQuery->where('name', 'like', '%'.$search.'%');
+                      });
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+        
         return view('admin.products', compact('products'));
     }
 
@@ -464,9 +483,20 @@ class AdminController extends Controller
 
     public function coupons()
     {
-        $coupons = Coupon::orderBy('expiry_date', 'desc')->paginate(12);
+        $search = request('search');
+        
+        $coupons = Coupon::query()
+            ->when($search, function($query) use ($search) {
+                $query->where(function($q) use ($search) {
+                    $q->where('code', 'like', '%'.$search.'%')
+                      ->orWhere('type', 'like', '%'.$search.'%')
+                      ->orWhere('value', 'like', '%'.$search.'%');
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+        
         return view('admin.coupons', compact('coupons'));
-
     }
 
     public function coupon_add()
@@ -529,7 +559,18 @@ class AdminController extends Controller
 
     public function orders()
     {
-        $orders = Order::orderBy('created_at', 'desc')->paginate(12);
+        $search = request('search');
+        
+        $orders = Order::query()
+            ->when($search, function($query) use ($search) {
+                $query->where(function($q) use ($search) {
+                    $q->where('name', 'like', '%'.$search.'%')
+                      ->orWhere('status', 'like', '%'.$search.'%');
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+        
         return view('admin.orders', compact('orders'));
     }
 
@@ -583,7 +624,7 @@ class AdminController extends Controller
             'subtitle' => 'required',
             'link' => 'required',
             'status' => 'required',
-            'image' => 'required|mimes:png, jpg, jpeg|max:5000',
+            'image' => 'required|mimes:png,jpg,jpeg|max:5000',
         ]);
 
         $slide = new Slide();
@@ -625,7 +666,7 @@ class AdminController extends Controller
             'subtitle' => 'required',
             'link' => 'required',
             'status' => 'required',
-            'image' => 'mimes:png, jpg, jpeg|max:5000',
+            'image' => 'mimes:png,jpg,jpeg|max:5000',
         ]);
 
         $slide = Slide::find($request->id);

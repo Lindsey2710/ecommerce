@@ -16,10 +16,10 @@ return new class extends Migration
             $table->bigInteger('user_id')->unsigned();
             $table->string('name');
             $table->string('phone');
-            $table->string('locality');
+            $table->string('locality')->nullable();
             $table->text('address');
             $table->string('city');
-            $table->string('state');
+            $table->string('state')->nullable();
             $table->string('country');
             $table->string('landmark')->nullable();
             $table->string('zip');

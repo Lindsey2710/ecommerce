@@ -166,22 +166,6 @@
                                     <i class="icon-menu-left"></i>
                                 </div>
 
-
-                                <form class="form-search flex-grow">
-                                    <fieldset class="name">
-                                        <input type="text" placeholder="Search here..." class="show-search" name="name"
-                                           id="search-input" tabindex="2" value="" aria-required="true" required="" autocomplete="off">
-                                    </fieldset>
-                                    <div class="button-submit">
-                                        <button class="" type="submit"><i class="icon-search"></i></button>
-                                    </div>
-                                    <div class="box-content-search">
-                                        <ul id="box-content-search">
-
-                                        </ul>
-                                    </div>
-                                </form>
-
                             </div>
                             <div class="header-grid">
 

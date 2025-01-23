@@ -22,13 +22,17 @@
         <div class="wg-box">
             <div class="flex items-center justify-between gap10 flex-wrap">
                 <div class="wg-filter flex-grow">
-                    <form class="form-search">
+                    <form class="form-search" method="GET" action="{{ route('admin.products') }}">
                         <fieldset class="name">
-                            <input type="text" placeholder="Search here..." class="" name="name"
-                                tabindex="2" value="" aria-required="true" required="">
+                            <input type="text" 
+                                placeholder="Search by name, brand or category..." 
+                                class="" 
+                                name="search"
+                                value="{{ request('search') }}"
+                                tabindex="2">
                         </fieldset>
                         <div class="button-submit">
-                            <button class="" type="submit"><i class="icon-search"></i></button>
+                            <button type="submit"><i class="icon-search"></i></button>
                         </div>
                     </form>
                 </div>
@@ -78,11 +82,6 @@
                             <td>{{ $product->quantity }}</td>
                             <td>
                                 <div class="list-icon-function">
-                                    <a href="#" target="_blank">
-                                        <div class="item eye">
-                                            <i class="icon-eye"></i>
-                                        </div>
-                                    </a>
                                     <a href="{{ route('admin.product.edit', ['id' => $product->id]) }}">
                                         <div class="item edit">
                                             <i class="icon-edit-3"></i>
