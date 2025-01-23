@@ -18,8 +18,12 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
             cd /home/horscom/htdocs/ecommerce.horsenco.com
-            git stash
-            git pull origin main
+            if [ ! -d .git ]; then
+              git init
+              git remote add origin https://github.com/Lindsey2710/ecommerce.git
+            fi
+            git fetch --all
+            git reset --hard origin/main
             composer install --no-interaction --prefer-dist --optimize-autoloader
             php artisan migrate --force
             php artisan config:cache
