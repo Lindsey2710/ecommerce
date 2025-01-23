@@ -50,7 +50,7 @@
                             <th>Name</th>
                             <th>Price</th>
                             <th>SalePrice</th>
-                            <th>SKU</th>
+                            <th>SKU code</th>
                             <th>Category</th>
                             <th>Brand</th>
                             <th>Featured</th>
