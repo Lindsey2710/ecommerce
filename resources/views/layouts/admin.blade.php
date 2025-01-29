@@ -28,12 +28,6 @@
         <div id="page" class="">
             <div class="layout-wrap">
 
-                <!-- <div id="preload" class="preload-container">
-    <div class="preloading">
-        <span></span>
-    </div>
-</div> -->
-
                 <div class="section-menu-left">
                     <div class="box-logo">
                         <a href="{{ route('home.index') }}" id="site-logo-inner">
@@ -157,7 +151,7 @@
                     <div class="header-dashboard">
                         <div class="wrap">
                             <div class="header-left">
-                                <a href="index-2.html">
+                                <a href="{{ route('home.index') }}">
                                     <img class="logo__image d-block" id="logo_header_mobile" alt="" src="{{ asset('images/logo/logo.png') }}"
                                         data-light="{{ asset('images/logo/logo.png') }}" data-dark="{{ asset('images/logo/logo.png') }}"
                                         data-width="154px" data-height="52px" data-retina="{{ asset('images/logo/logo.png') }}">
