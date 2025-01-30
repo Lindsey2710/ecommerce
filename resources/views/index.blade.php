@@ -125,7 +125,7 @@
           <div
             class="col-md-6 col-lg-4 col-xl-20per d-flex align-items-center flex-column justify-content-center py-4 align-items-md-start">
             <h2>Sales</h2>
-            <h2 class="fw-bold">Up to 20% Off</h2>
+            <h2 class="fw-bold">Crazy Deals</h2>
             <a href="{{ route('shop.index') }}" class="btn-link default-underline text-uppercase fw-medium mt-3">View All</a>
           </div>
           <div class="col-md-6 col-lg-8 col-xl-80per">
