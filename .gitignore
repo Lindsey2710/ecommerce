@@ -9,6 +9,7 @@
 .env
 .env.backup
 .env.production
+.env.docker
 .phpactor.json
 .phpunit.result.cache
 docker-compose.override.yml
@@ -16,6 +17,8 @@ Homestead.json
 Homestead.yaml
 auth.json
 npm-debug.log
+docker-compose.yml
+Docker.md
 yarn-error.log
 /.fleet
 /.idea
@@ -24,3 +27,7 @@ yarn-error.log
 /.zed
 /public/uploads
 /DEPLOY.md
+*.log
+*.key
+*.pem
+/storage/logs/*
