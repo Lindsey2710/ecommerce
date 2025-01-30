@@ -1,0 +1,48 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: root
+          password: ${{ secrets.ROOT_PASSWORD }}
+          script: |
+            echo "${{ secrets.HORSENCO_PASSWORD }}" | su - horsenco -c '
+              cd /home/horsenco/htdocs/ecommerce.horsenco.com
+              
+              # Backup database
+              DB_DATABASE=$(grep DB_DATABASE .env | cut -d "=" -f2)
+              DB_USERNAME=$(grep DB_USERNAME .env | cut -d "=" -f2)
+              DB_PASSWORD=$(grep DB_PASSWORD .env | cut -d "=" -f2)
+              
+              mkdir -p ~/backups
+              BACKUP_FILE="~/backups/db_backup_$(date +%Y%m%d_%H%M%S).sql"
+              mysqldump -u "$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE" > "$BACKUP_FILE"
+              
+              # Pull latest changes
+              git pull origin main
+              
+              # Install dependencies
+              composer install --no-interaction --prefer-dist --optimize-autoloader
+              
+              # Run migrations
+              php artisan migrate --force
+              
+              # Clear and optimize
+              php artisan optimize:clear
+              php artisan optimize
+              
+              # Set permissions
+              chmod -R 775 storage bootstrap/cache
+              chmod -R 775 public/uploads
+            ' 
